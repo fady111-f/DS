@@ -10,7 +10,6 @@ Restaurant::~Restaurant() {
 
 void Restaurant::RunSimulation() {
     // --- PHASE 1.2 TESTING: Dummy Data ---
-    // بنحط داتا وهمية عشان نتأكد إن القوائم والطباعة شغالين صح
 
     // 1. Add some Pending Orders
     pendODG.enqueue(new Order(333, TYPE_ODG));

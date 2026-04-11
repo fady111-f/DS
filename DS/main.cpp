@@ -9,6 +9,5 @@ int main() {
 
     // Clean up
     delete pRest;
-    .
     return 0;
 }
