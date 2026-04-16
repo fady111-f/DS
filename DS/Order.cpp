@@ -9,7 +9,7 @@ Order::Order(int orderID, OrderType orderType, double pr, double s, double d) {
     distance = d;
     RequestTime = 0;
     FinishTime = 0;
-
+	priority = pr * s * d; // Example priority calculation based on price, size, and distance
     // Initially, no resources are assigned
     assignedChef = nullptr;
     assignedTable = nullptr;
@@ -89,6 +89,14 @@ void Order::setAssignedScooter(Scooter* s) {
     assignedScooter = s;
 }
 
+int Order::GetPriority() const
+{
+	return priority;
+}
+void Order::SetPriority(int p)
+{
+    priority = p;
+}
 // Destructor
 Order::~Order() {
     // Resources are NOT deleted here because the order does not own them,

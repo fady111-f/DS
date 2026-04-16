@@ -22,7 +22,7 @@ class Order {
 private:
     int id;           // Order ID
     OrderType type;   // Type of the order
-
+	int priority;    // Priority for queues that require it (e.g., PEND_OVG)
     // Timestamps (Will be fully used in Phase 2)
     int RequestTime;
     int FinishTime;
@@ -63,6 +63,8 @@ public:
 	void setAssignedChef(Chef* c);
 	void setAssignedTable(Table* t);
 	void setAssignedScooter(Scooter* s);
+    int GetPriority() const;
+    void SetPriority(int p);
 
     // Destructor
     ~Order();
