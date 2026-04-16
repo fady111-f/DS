@@ -9,7 +9,8 @@ enum OrderType {
     TYPE_ODN, // Normal Dine-in
     TYPE_OT,  // Takeaway
     TYPE_OVN, // Normal Delivery
-    TYPE_OVC  // VIP Delivery
+    TYPE_OVC, // VIP Delivery
+    TYPE_OVG  // General Delivery
 };
 
 // Forward declaration of resources

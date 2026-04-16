@@ -5,9 +5,10 @@ int main() {
     Restaurant* pRest = new Restaurant();
 
     // Start the simulation
-    pRest->RunSimulation();
+    pRest->RandomSimulator();
 
     // Clean up
-    delete pRest;
+  
+	delete pRest;
     return 0;
 }
