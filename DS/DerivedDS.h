@@ -52,6 +52,7 @@ public:
         bool found = false;
         while (dequeue(currentOrder)) {
             if (currentOrder->GetID() == orderID) {
+                returnedOrder = currentOrder;
                 found = true; // Mark as found but do not enqueue back
             }
             else {
@@ -106,7 +107,26 @@ public:
         // The item at the head may not fit the current order.
         // Dequeue until you find a table with (available seats >= requiredSeats).
         // Enqueue the other tables back.
-        return false; // Placeholder for Phase 2
+        // Placeholder for Phase 2
+		PriQueue<Table*> tempQueue;
+        Table* currenttable = nullptr;
+        bool found = false;
+        while (dequeue(currenttable))
+        {
+            if (currenttable->GetFreeSeats() >= requiredSeats)
+            {
+                bestTable = currenttable;
+                found = true;
+            }
+            else
+            {
+                tempQueue.enqueue(currenttable, currenttable->GetFreeSeats());
+            }
+        }
+        while (tempQueue.dequeue(currenttable)) {
+            enqueue(currenttable, currenttable->GetFreeSeats());
+        }
+        return found;
     }
 };
 
