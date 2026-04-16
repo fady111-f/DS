@@ -25,16 +25,16 @@ public:
         LinkedQueue<Order*>& PEND_ODN,
         LinkedQueue<Order*>& PEND_OT,
         LinkedQueue<Order*>& PEND_OVN,
-        Pend_OVC& PEND_OVC_List,
+        LinkedQueue<Order*>& PEND_OVC,
         PriQueue<Order*>& PEND_OVG,
 
         LinkedQueue<Chef*>& Free_CS,
         LinkedQueue<Chef*>& Free_CN,
 
-        Cook_Ords& Cooking_Orders,
+        PriQueue<Order*>& Cooking_Orders,
 
         LinkedQueue<Order*>& RDY_OT,
-        RDY_OV& RDY_OV_List,
+        LinkedQueue<Order*>& RDY_OV,
         LinkedQueue<Order*>& RDY_OD,
 
         PriQueue<Order*>& InServ_Orders,
@@ -46,9 +46,9 @@ public:
         PriQueue<Scooter*>& Back_Scooters,
         LinkedQueue<Scooter*>& Maint_Scooters,
 
-        Fit_Tables& Free_Tables,
-        Fit_Tables& Busy_Sharable,
-        Fit_Tables& Busy_No_Share
+        PriQueue<Table*>& Free_Tables,
+        PriQueue<Table*>& Busy_Sharable,
+        PriQueue<Table*>& Busy_No_Share
     );
 };
 

@@ -34,7 +34,7 @@ void Restaurant::add_ovn(Order* o)
 
 void Restaurant::add_ovc(Order* o)
 {
-    PEND_OVC_List.enqueue(o);
+    PEND_OVC.enqueue(o);
 }
 
 void Restaurant::add_ovg(Order* o, int priority)
@@ -51,7 +51,7 @@ void Restaurant::PrintAll(int timestep)
         PEND_ODN,
         PEND_OT,
         PEND_OVN,
-        PEND_OVC_List,
+        PEND_OVC,
         PEND_OVG,
 
         Free_CS,
@@ -60,7 +60,7 @@ void Restaurant::PrintAll(int timestep)
         Cooking_Orders,
 
         RDY_OT,
-        RDY_OV_List,
+        RDY_OV,
         RDY_OD,
 
         InServ_Orders,
@@ -82,126 +82,91 @@ void Restaurant::RandomSimulator()
 {
     srand((unsigned int)time(0));
 
-    // 1) Initialize chefs
-    for (int i = 1; i <= 5; i++)
-        Free_CN.enqueue(new Chef(i, 'N'));
+    int totalOrders = 500;
+    int finishedOrCancelled = 0;
+    int timestep = 0;
+    int maxTimesteps = 1000;
 
-    for (int i = 6; i <= 10; i++)
-        Free_CS.enqueue(new Chef(i, 'S'));
-
-    // 2) Initialize scooters
-    for (int i = 1; i <= 5; i++)
-        Free_Scooters.enqueue(new Scooter(i, 0), rand() % 100 + 1);
-
-    // 3) Initialize tables
-    for (int i = 1; i <= 5; i++)
+    for (int i = 1; i <= 20; i++)
     {
-        int capacity = 2 * i;
+        Free_CN.enqueue(new Chef(i, 'N'));
+    }
+
+    for (int i = 21; i <= 30; i++)
+    {
+        Free_CS.enqueue(new Chef(i, 'S'));
+    }
+
+    for (int i = 1; i <= 20; i++)
+    {
+        Free_Scooters.enqueue(new Scooter(i, 0), rand() % 100 + 1);
+    }
+
+    for (int i = 1; i <= 20; i++)
+    {
+        int capacity = (rand() % 5 + 1) * 2;
         int priority = 100 - capacity;
         Free_Tables.enqueue(new Table(i, capacity), priority);
     }
 
-    // 4) Generate random pending orders
-    for (int i = 1; i <= 20; i++)
+    for (int i = 1; i <= totalOrders; i++)
     {
         int randomType = rand() % 6;
-        double price = rand() % 100 + 1;
-        double size = rand() % 10 + 1;
-        double distance = rand() % 20 + 1;
-        Order* newOrder = new Order(i, (OrderType)randomType, price, size, distance);
+        Order* newOrder = new Order(i, (OrderType)randomType, rand() % 5 + 1, rand() % 200 + 50, rand() % 20 + 1);
 
         switch (randomType)
         {
-        case TYPE_ODG:
-            PEND_ODG.enqueue(newOrder);
-            break;
-        case TYPE_ODN:
-            PEND_ODN.enqueue(newOrder);
-            break;
-        case TYPE_OT:
-            PEND_OT.enqueue(newOrder);
-            break;
-        case TYPE_OVN:
-            PEND_OVN.enqueue(newOrder);
-            break;
-        case TYPE_OVC:
-            PEND_OVC_List.enqueue(newOrder);
-            break;
-        case TYPE_OVG:
-            PEND_OVG.enqueue(newOrder, rand() % 100 + 1);
-            break;
+        case TYPE_ODG: PEND_ODG.enqueue(newOrder); break;
+        case TYPE_ODN: PEND_ODN.enqueue(newOrder); break;
+        case TYPE_OT:  PEND_OT.enqueue(newOrder); break;
+        case TYPE_OVN: PEND_OVN.enqueue(newOrder); break;
+        case TYPE_OVC: PEND_OVC.enqueue(newOrder); break;
+        case TYPE_OVG: PEND_OVG.enqueue(newOrder, rand() % 100 + 1); break;
         }
     }
 
-    // 5) Simulate multiple timesteps
-    for (int timestep = 1; timestep <= 5; timestep++)
+    std::cout << "\n========== Initial State (Timestep 0) ==========\n";
+    PrintAll(timestep);
+    std::cout << "\nPress [Enter] to advance to timestep 1...";
+    std::cin.get();
+
+    while (finishedOrCancelled < totalOrders && timestep < maxTimesteps)
     {
-        // -------------------------------
-        // Move from Pending -> Cooking
-        // -------------------------------
-        for (int i = 0; i < 3; i++)
+        timestep++;
+
+        for (int i = 0; i < 30; i++)
         {
             int choice = rand() % 6;
             Order* ord = nullptr;
             Chef* chef = nullptr;
-
             bool gotOrder = false;
             bool gotChef = false;
 
             switch (choice)
             {
-            case 0:
-                gotOrder = PEND_ODG.dequeue(ord);
-                break;
-            case 1:
-                gotOrder = PEND_ODN.dequeue(ord);
-                break;
-            case 2:
-                gotOrder = PEND_OT.dequeue(ord);
-                break;
-            case 3:
-                gotOrder = PEND_OVN.dequeue(ord);
-                break;
-            case 4:
-                gotOrder = PEND_OVC_List.dequeue(ord);
-                break;
-            case 5:
-                gotOrder = PEND_OVG.dequeue(ord);
-                break;
+            case 0: gotOrder = PEND_ODG.dequeue(ord); break;
+            case 1: gotOrder = PEND_ODN.dequeue(ord); break;
+            case 2: gotOrder = PEND_OT.dequeue(ord); break;
+            case 3: gotOrder = PEND_OVN.dequeue(ord); break;
+            case 4: gotOrder = PEND_OVC.dequeue(ord); break;
+            case 5: gotOrder = PEND_OVG.dequeue(ord); break;
             }
 
-            if (!gotOrder)
-                continue;
+            if (!gotOrder) continue;
 
-            // get a chef
-            if (rand() % 2 == 0)
-                gotChef = Free_CN.dequeue(chef);
-            else
-                gotChef = Free_CS.dequeue(chef);
+            if (rand() % 2 == 0) gotChef = Free_CN.dequeue(chef);
+            else gotChef = Free_CS.dequeue(chef);
 
             if (!gotChef)
             {
-                // if no chef available, put order back approximately
                 switch (ord->GetType())
                 {
-                case TYPE_ODG:
-                    PEND_ODG.enqueue(ord);
-                    break;
-                case TYPE_ODN:
-                    PEND_ODN.enqueue(ord);
-                    break;
-                case TYPE_OT:
-                    PEND_OT.enqueue(ord);
-                    break;
-                case TYPE_OVN:
-                    PEND_OVN.enqueue(ord);
-                    break;
-                case TYPE_OVC:
-                    PEND_OVC_List.enqueue(ord);
-                    break;
-                case TYPE_OVG:
-                    PEND_OVG.enqueue(ord, rand() % 100 + 1);
-                    break;
+                case TYPE_ODG: PEND_ODG.enqueue(ord); break;
+                case TYPE_ODN: PEND_ODN.enqueue(ord); break;
+                case TYPE_OT: PEND_OT.enqueue(ord); break;
+                case TYPE_OVN: PEND_OVN.enqueue(ord); break;
+                case TYPE_OVC: PEND_OVC.enqueue(ord); break;
+                case TYPE_OVG: PEND_OVG.enqueue(ord, rand() % 100 + 1); break;
                 }
                 continue;
             }
@@ -210,38 +175,25 @@ void Restaurant::RandomSimulator()
             Cooking_Orders.enqueue(ord, rand() % 100 + 1);
         }
 
-        // -------------------------------
-        // Move from Cooking -> Ready
-        // -------------------------------
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 15; i++)
         {
+            if ((rand() % 100) >= 75) continue;
+
             Order* ord = nullptr;
-            if (!Cooking_Orders.dequeue(ord))
-                continue;
+            if (!Cooking_Orders.dequeue(ord)) continue;
 
             switch (ord->GetType())
             {
-            case TYPE_OT:
-                RDY_OT.enqueue(ord);
-                break;
-
+            case TYPE_OT: RDY_OT.enqueue(ord); break;
             case TYPE_OVN:
             case TYPE_OVC:
-            case TYPE_OVG:
-                RDY_OV_List.enqueue(ord);
-                break;
-
+            case TYPE_OVG: RDY_OV.enqueue(ord); break;
             case TYPE_ODG:
-            case TYPE_ODN:
-                RDY_OD.enqueue(ord);
-                break;
+            case TYPE_ODN: RDY_OD.enqueue(ord); break;
             }
         }
 
-        // -------------------------------
-        // Move from Ready -> Finished / InService
-        // -------------------------------
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 10; i++)
         {
             int choice = rand() % 3;
             Order* ord = nullptr;
@@ -249,72 +201,90 @@ void Restaurant::RandomSimulator()
 
             switch (choice)
             {
-            case 0:
-                gotOrder = RDY_OT.dequeue(ord);
-                break;
-            case 1:
-                gotOrder = RDY_OV_List.dequeue(ord);
-                break;
-            case 2:
-                gotOrder = RDY_OD.dequeue(ord);
-                break;
+            case 0: gotOrder = RDY_OT.dequeue(ord); break;
+            case 1: gotOrder = RDY_OV.dequeue(ord); break;
+            case 2: gotOrder = RDY_OD.dequeue(ord); break;
             }
 
-            if (!gotOrder)
-                continue;
+            if (!gotOrder) continue;
 
-            // Takeaway goes directly to finished
             if (ord->GetType() == TYPE_OT)
             {
                 Finished_Orders.push(ord);
+                finishedOrCancelled++;
 
-                Chef* chef = ord->GetAssignedChef();
+                Chef* chef = ord->AssignedChef();
                 if (chef)
                 {
-                    if (chef->GetType() == 'N')
-                        Free_CN.enqueue(chef);
-                    else
-                        Free_CS.enqueue(chef);
-
+                    if (chef->GetType() == 'N') Free_CN.enqueue(chef);
+                    else Free_CS.enqueue(chef);
                     ord->AssignChef(nullptr);
                 }
             }
             else
             {
-                // Delivery or Dine-in goes to In-Service
                 InServ_Orders.enqueue(ord, rand() % 100 + 1);
             }
         }
 
-        // -------------------------------
-        // Move from In-Service -> Finished
-        // -------------------------------
-        for (int i = 0; i < 2; i++)
+        if ((rand() % 100) < 10)
         {
             Order* ord = nullptr;
-            if (!InServ_Orders.dequeue(ord))
-                continue;
+            if (PEND_OVC.dequeue(ord))
+            {
+                Cancelled_Orders.enqueue(ord);
+                finishedOrCancelled++;
+            }
+        }
+        if ((rand() % 100) < 10)
+        {
+            Order* ord = nullptr;
+            if (RDY_OV.dequeue(ord))
+            {
+                Cancelled_Orders.enqueue(ord);
+                finishedOrCancelled++;
+            }
+        }
+
+        for (int i = 0; i < 10; i++)
+        {
+            if ((rand() % 100) >= 25) continue;
+
+            Order* ord = nullptr;
+            if (!InServ_Orders.dequeue(ord)) continue;
 
             Finished_Orders.push(ord);
+            finishedOrCancelled++;
 
-            Chef* chef = ord->GetAssignedChef();
+            Chef* chef = ord->AssignedChef
+            
+            
+            
+            
+            
+            
+            
+            ();
             if (chef)
             {
-                if (chef->GetType() == 'N')
-                    Free_CN.enqueue(chef);
-                else
-                    Free_CS.enqueue(chef);
-
+                if (chef->GetType() == 'N') Free_CN.enqueue(chef);
+                else Free_CS.enqueue(chef);
                 ord->AssignChef(nullptr);
             }
         }
 
-        // Print current timestep
+        std::cout << "\n========== Snapshot at timestep " << timestep << " ==========\n";
         PrintAll(timestep);
 
-        std::cout << "\nPress Enter to continue...\n";
+        std::cout << "\nPress [Enter] to advance to timestep " << timestep + 1 << "...";
         std::cin.get();
     }
+
+    std::cout << "\n=====================================\n";
+    std::cout << "Simulation Ended at timestep: " << timestep << "\n";
+    std::cout << "Total Orders: " << totalOrders << "\n";
+    std::cout << "Finished/Cancelled: " << finishedOrCancelled << "\n";
+    std::cout << "=====================================\n";
 }
 
 void Restaurant::RunSimulation()
