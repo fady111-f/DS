@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Action.h" />
+    <ClInclude Include="CancelAction.h" />
     <ClInclude Include="Chef.h" />
     <ClInclude Include="DerivedDS.h" />
     <ClInclude Include="LinkedQueue.h" />
@@ -26,15 +28,19 @@
     <ClInclude Include="Node.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="PriQueue.h" />
+    <ClInclude Include="RequestAction.h" />
     <ClInclude Include="Restaurant.h" />
     <ClInclude Include="Scooter.h" />
     <ClInclude Include="Table.h" />
     <ClInclude Include="UI.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Action.cpp" />
+    <ClCompile Include="CancelAction.cpp" />
     <ClCompile Include="Chef.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Order.cpp" />
+    <ClCompile Include="RequestAction.cpp" />
     <ClCompile Include="Restaurant.cpp" />
     <ClCompile Include="Scooter.cpp" />
     <ClCompile Include="Table.cpp" />
@@ -64,7 +70,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">

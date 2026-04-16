@@ -66,3 +66,9 @@ void Restaurant::add_ovg(Order* o, int priority)
 {
     PEND_OVG.enqueue(o, priority);
 }
+void Restaurant::CancelOVC(int id)
+{
+    PEND_OVC.CancelOrder(id);
+	Cooking_Orders.CancelOrder(id);
+	RDY_OVL.SearchAndRemove(id);
+}

@@ -3,6 +3,8 @@
 
 #include "LinkedQueue.h"
 #include "PriQueue.h"
+#include "Order.h"
+#include "Table.h"
 
 // Forward declaration of classes so the compiler knows they exist
 class Order;
@@ -18,7 +20,22 @@ public:
         // 1. Dequeue elements one by one into a temporary queue.
         // 2. If the element's ID matches orderID, do NOT enqueue it in the temp queue (this removes it).
         // 3. Enqueue all elements from the temp queue back to this queue.
-        return false; // Placeholder for Phase 2
+        LinkedQueue<Order*> tempQueue;
+        Order* currentOrder = nullptr;
+        bool found = false;
+        while (dequeue(currentOrder)) {
+            if (currentOrder->GetID() == orderID) {
+                found = true; // Mark as found but do not enqueue back
+            }
+            else {
+                tempQueue.enqueue(currentOrder); // Enqueue back to temp queue
+            }
+        }
+        // Enqueue all elements from the temp queue back to this queue
+        while (tempQueue.dequeue(currentOrder)) {
+            enqueue(currentOrder);
+        }
+        return found;
     }
 };
 
@@ -27,11 +44,28 @@ public:
 class RDY_OV : public LinkedQueue<Order*> {
 public:
     // Search and remove a specific order by ID
-    bool SearchAndRemove(int orderID, Order*& returnedOrder) {
+    bool SearchAndRemove(int orderID) {
         // Implementation Logic for later:
         // Traverse the queue to find the order by ID, remove it, and return it.
-        return false; // Placeholder for Phase 2
+         // Placeholder for Phase 2
+        LinkedQueue<Order*> tempQueue;
+        Order* currentOrder = nullptr;
+        bool found = false;
+        while (dequeue(currentOrder)) {
+            if (currentOrder->GetID() == orderID) {
+                found = true; // Mark as found but do not enqueue back
+            }
+            else {
+                tempQueue.enqueue(currentOrder); // Enqueue back to temp queue
+            }
+        }
+        // Enqueue all elements from the temp queue back to this queue
+        while (tempQueue.dequeue(currentOrder)) {
+            enqueue(currentOrder);
+        }
+        return found;
     }
+
 };
 
 // 3. Cook_Ords: Derived from Priority Queue
@@ -42,8 +76,25 @@ public:
     bool CancelOrder(int orderID) {
         // Implementation Logic for later:
         // Dequeue all items, filter out the cancelled ID, and enqueue the rest back.
-        return false; // Placeholder for Phase 2
+        // Placeholder for Phase 2
+        PriQueue<Order*> tempQueue;
+        Order* currentOrder = nullptr;
+        bool found = false;
+        while (dequeue(currentOrder)) {
+            if (currentOrder->GetID() == orderID) {
+                found = true; // Mark as found but do not enqueue back
+            }
+            else {
+                tempQueue.enqueue(currentOrder, currentOrder->GetPriority()); // Enqueue back to temp queue
+            }
+        }
+        // Enqueue all elements from the temp queue back to this queue
+        while (tempQueue.dequeue(currentOrder)) {
+            enqueue(currentOrder, currentOrder->GetPriority());
+        }
+        return found;
     }
+
 };
 
 // 4. Fit_Tables: Derived from Priority Queue

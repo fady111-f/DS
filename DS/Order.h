@@ -9,7 +9,8 @@ enum OrderType {
     TYPE_ODN, // Normal Dine-in
     TYPE_OT,  // Takeaway
     TYPE_OVN, // Normal Delivery
-    TYPE_OVC  // VIP Delivery
+    TYPE_OVC, // VIP Delivery
+    TYPE_OVG  // General Delivery
 };
 
 // Forward declaration of resources
@@ -21,10 +22,13 @@ class Order {
 private:
     int id;           // Order ID
     OrderType type;   // Type of the order
-
+    int priority;    // Priority for queues that require it (e.g., PEND_OVG)
     // Timestamps (Will be fully used in Phase 2)
     int RequestTime;
     int FinishTime;
+    double price;
+    double size;
+    double distance;
 
     // Assigned Resources (To avoid busy lists as requested in the DS sheet)
     Chef* assignedChef;
@@ -33,7 +37,7 @@ private:
 
 public:
     // Constructor
-    Order(int orderID, OrderType orderType);
+    Order(int orderID, OrderType orderType, double pr, double s, double d);
 
     // Getters
     int GetID() const;
@@ -43,6 +47,24 @@ public:
     void AssignChef(Chef* c);
     void AssignTable(Table* t);
     void AssignScooter(Scooter* s);
+    double GetPrice() const;
+    double GetSize() const;
+    double GetDistance() const;
+    void setPrice(double pr);
+    void setSize(double s);
+    void setDistance(double d);
+    Chef* AssignedChef() const;
+    Table* AssignedTable() const;
+    Scooter* AssignedScooter() const;
+    int GetRequestTime() const;
+    int GetFinishTime() const;
+    void setRequestTime(int time);
+    void setFinishTime(int time);
+    void setAssignedChef(Chef* c);
+    void setAssignedTable(Table* t);
+    void setAssignedScooter(Scooter* s);
+    int GetPriority() const;
+    void SetPriority(int p);
 
     // Destructor
     ~Order();
