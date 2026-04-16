@@ -16,18 +16,42 @@ class Restaurant {
 private:
     UI* pUI;
 
-    // Data Structures for Phase 1.2 Testing
-    LinkedQueue<Order*> pendODG;
-    Pend_OVC pendOVC;
-    LinkedQueue<Chef*> availNormChefs;
-    Cook_Ords cookingOrders;
-    Fit_Tables availableTables;
-    LinkedStack<Order*> finishedOrders;
+    // action lists     LinkedQueue<Action*> ACTION_LIST;
+    LinkedQueue<Order*> PEND_ODG;
+    LinkedQueue<Order*> PEND_ODN;
+    LinkedQueue<Order*> PEND_OT;
+    LinkedQueue<Order*> PEND_OVN;
+    LinkedQueue<Order*> PEND_OVC;
+    PriQueue<Order*> PEND_OVG;
+    LinkedQueue<Chef*> Free_CS;
+    LinkedQueue<Chef*> Free_CN;
+    LinkedQueue<Order*> Cancelled_Orders;
+    LinkedStack<Order*> Finished_Orders;
+    PriQueue<Order*> Cooking_Orders;
+    LinkedQueue<Order*> RDY_OT;
+    LinkedQueue<Order*> RDY_OV;
+    LinkedQueue<Order*> RDY_OD;
+    PriQueue<Order*> InServ_Orders;
+    PriQueue<Scooter*> Free_Scooters;
+    PriQueue<Scooter*> Back_Scooters;
+    LinkedQueue<Scooter*> Maint_Scooters;
+    PriQueue<Table*> Free_Tables;
+    PriQueue<Table*> Busy_Sharable;
+    PriQueue<Table*> Busy_No_Share;
+
+
+
 
 public:
     Restaurant();
     ~Restaurant();
-    void RunSimulation();
+    //void RunSimulation();
+    void add_odg(Order* o);
+    void add_odn(Order* o);
+    void add_ot(Order* o);
+    void add_ovn(Order* o);
+    void add_ovc(Order* o);
+    void add_ovg(Order* o, int priority);
 };
 
 #endif // RESTAURANT_H

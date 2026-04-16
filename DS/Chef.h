@@ -11,6 +11,8 @@ private:
 public:
     Chef(int id, char type);
     int GetID() const;
+    char GetType() const;
+    void setType(char newType);
 };
 
 // Overloading << to print the Chef ID easily

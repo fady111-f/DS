@@ -9,6 +9,16 @@ int Chef::GetID() const {
     return id;
 }
 
+char Chef::GetType() const
+{
+    return type;
+}
+
+void Chef::setType(char newType)
+{
+    type = newType;
+}
+
 std::ostream& operator<<(std::ostream& os, const Chef* chef) {
     if (chef != nullptr) {
         os << chef->GetID();
