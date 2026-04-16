@@ -43,7 +43,7 @@ public:
 class RDY_OV : public LinkedQueue<Order*> {
 public:
     // Search and remove a specific order by ID
-    bool SearchAndRemove(int orderID, Order*& returnedOrder) {
+    bool SearchAndRemove(int orderID) {
         // Implementation Logic for later:
         // Traverse the queue to find the order by ID, remove it, and return it.
          // Placeholder for Phase 2

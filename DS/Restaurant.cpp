@@ -26,7 +26,7 @@ void Restaurant::PrintAll(int timestep)
         PEND_ODG, PEND_ODN, PEND_OT, PEND_OVN, PEND_OVC, PEND_OVG,
         Free_CS, Free_CN,
         Cooking_Orders,
-        RDY_OT, RDY_OV, RDY_OD,
+        RDY_OT, RDY_OVL, RDY_OD,
         InServ_Orders,
         Cancelled_Orders, Finished_Orders,
         Free_Scooters, Back_Scooters, Maint_Scooters,
@@ -133,7 +133,7 @@ void Restaurant::RandomSimulator()
             {
                 int listChoice = rand() % 3;
                 if (listChoice == 0) RDY_OT.enqueue(ord);
-                else if (listChoice == 1) RDY_OV.enqueue(ord);
+                else if (listChoice == 1) RDY_OVL.enqueue(ord);
                 else RDY_OD.enqueue(ord);
             }
         }
@@ -147,7 +147,7 @@ void Restaurant::RandomSimulator()
             bool gotOrder = false;
 
             if (choice == 0) gotOrder = RDY_OT.dequeue(ord);
-            else if (choice == 1) gotOrder = RDY_OV.dequeue(ord);
+            else if (choice == 1) gotOrder = RDY_OVL.dequeue(ord);
             else gotOrder = RDY_OD.dequeue(ord);
 
             if (!gotOrder) continue;
@@ -201,7 +201,7 @@ void Restaurant::RandomSimulator()
         targetID = rand() % totalOrders + 1;
         LinkedQueue<Order*> tempQ_RDY;
         bool foundRDY = false;
-        while (RDY_OV.dequeue(tempOrd)) {
+        while (RDY_OVL.dequeue(tempOrd)) {
             if (!foundRDY && tempOrd->GetID() == targetID) {
                 Cancelled_Orders.enqueue(tempOrd);
                 finishedOrCancelled++;
@@ -211,7 +211,7 @@ void Restaurant::RandomSimulator()
                 tempQ_RDY.enqueue(tempOrd);
             }
         }
-        while (tempQ_RDY.dequeue(tempOrd)) RDY_OV.enqueue(tempOrd);
+        while (tempQ_RDY.dequeue(tempOrd)) RDY_OVL.enqueue(tempOrd);
 
         // 3.6. Cancel function of "cooking OV", place in cancel and release chef.
         targetID = rand() % totalOrders + 1;
@@ -307,4 +307,10 @@ void Restaurant::RunSimulation()
     std::cout << "Starting Random Simulation...\n";
     RandomSimulator();
     std::cout << "\nSimulation Finished.\n";
+}
+void Restaurant::CancelOVC(int id)
+{
+    PEND_OVC.CancelOrder(id);
+	Cooking_Orders.CancelOrder(id);
+	RDY_OVL.SearchAndRemove(id);
 }
