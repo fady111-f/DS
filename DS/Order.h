@@ -25,6 +25,9 @@ private:
     // Timestamps (Will be fully used in Phase 2)
     int RequestTime;
     int FinishTime;
+	double price;
+    double size;
+	double distance;
 
     // Assigned Resources (To avoid busy lists as requested in the DS sheet)
     Chef* assignedChef;
@@ -33,7 +36,7 @@ private:
 
 public:
     // Constructor
-    Order(int orderID, OrderType orderType);
+    Order(int orderID, OrderType orderType, double pr, double s , double d);
 
     // Getters
     int GetID() const;
@@ -43,6 +46,12 @@ public:
     void AssignChef(Chef* c);
     void AssignTable(Table* t);
     void AssignScooter(Scooter* s);
+    double GetPrice() const;
+	double GetSize() const;
+	double GetDistance() const;
+	void setPrice(double pr);
+	void setSize(double s);
+	void setDistance(double d);
 
     // Destructor
     ~Order();

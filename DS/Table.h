@@ -15,7 +15,6 @@ public:
     int GetCapacity() const;
     int GetFreeSeats() const;
     void setFreeSeats(int freeSeats);
-    int getFreeSeats() const;
 };
 
 std::ostream& operator<<(std::ostream& os, const Table* table);

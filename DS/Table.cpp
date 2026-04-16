@@ -15,10 +15,6 @@ void Table::setFreeSeats(int freeSeats)
     this->freeSeats = freeSeats;
 }
 
-int Table::getFreeSeats() const
-{
-    return freeSeats;
-}
 
 // Overloading << to format Table printing as requested: [ID, capacity, free seats]
 std::ostream& operator<<(std::ostream& os, const Table* table) {

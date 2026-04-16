@@ -1,9 +1,12 @@
 #include "Order.h"
 
 // Constructor implementation
-Order::Order(int orderID, OrderType orderType) {
+Order::Order(int orderID, OrderType orderType, double pr, double s, double d) {
     id = orderID;
     type = orderType;
+    price = pr;
+    size = s;
+    distance = d;
     RequestTime = 0;
     FinishTime = 0;
 
@@ -36,6 +39,24 @@ void Order::AssignTable(Table* t) {
 // Assign a scooter to this order
 void Order::AssignScooter(Scooter* s) {
     assignedScooter = s;
+}
+double Order::GetPrice() const {
+    return price;
+}
+double Order::GetSize() const {
+    return size;
+}
+double Order::GetDistance() const {
+    return distance;
+}
+void Order::setPrice(double pr) {
+    price = pr;
+}
+void Order::setSize(double s) {
+    size = s;
+}
+void Order::setDistance(double d) {
+    distance = d;
 }
 
 // Destructor
