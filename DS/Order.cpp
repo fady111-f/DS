@@ -58,6 +58,36 @@ void Order::setSize(double s) {
 void Order::setDistance(double d) {
     distance = d;
 }
+Chef* Order::AssignedChef() const {
+    return assignedChef;
+}
+Table* Order::AssignedTable() const {
+    return assignedTable;
+}
+Scooter* Order::AssignedScooter() const {
+    return assignedScooter;
+}
+int Order::GetRequestTime() const {
+    return RequestTime;
+}
+int Order::GetFinishTime() const {
+    return FinishTime;
+}
+void Order::setRequestTime(int time) {
+    RequestTime = time;
+}
+void Order::setFinishTime(int time) {
+    FinishTime = time;
+}
+void Order::setAssignedChef(Chef* c) {
+    assignedChef = c;
+}
+void Order::setAssignedTable(Table* t) {
+    assignedTable = t;
+}
+void Order::setAssignedScooter(Scooter* s) {
+    assignedScooter = s;
+}
 
 // Destructor
 Order::~Order() {
