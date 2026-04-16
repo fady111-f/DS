@@ -1,58 +1,141 @@
 #include "UI.h"
 
-UI::UI() {}
-
-UI::~UI() {}
-
-// Print the current simulation state
-void UI::PrintState(int timestep,
-    LinkedQueue<Order*>& pendODG,
-    Pend_OVC& pendOVC,
-    LinkedQueue<Chef*>& availNormChefs,
-    Cook_Ords& cookingOrders,
-    Fit_Tables& availableTables,
-    LinkedStack<Order*>& finishedOrders)
+UI::UI()
 {
-    std::cout << "========================================" << std::endl;
-    std::cout << "Timestep: " << timestep << std::endl;
-    std::cout << "========================================" << std::endl;
+}
 
-    // 1. Print Pending Orders
-    std::cout << "Pending Orders IDs:" << std::endl;
-    std::cout << pendODG.GetCount() << " ODG: ";
-    pendODG.print();
-    std::cout << std::endl;
+UI::~UI()
+{
+}
 
-    std::cout << pendOVC.GetCount() << " OVC: ";
-    pendOVC.print();
-    std::cout << std::endl;
-    std::cout << "----------------------------------------" << std::endl;
+void UI::PrintState(
+    int timestep,
 
-    // 2. Print Available Chefs
-    std::cout << "Available Chefs IDs:" << std::endl;
-    std::cout << availNormChefs.GetCount() << " CN: ";
-    availNormChefs.print();
-    std::cout << std::endl;
-    std::cout << "----------------------------------------" << std::endl;
+    LinkedQueue<Order*>& PEND_ODG,
+    LinkedQueue<Order*>& PEND_ODN,
+    LinkedQueue<Order*>& PEND_OT,
+    LinkedQueue<Order*>& PEND_OVN,
+    Pend_OVC& PEND_OVC_List,
+    PriQueue<Order*>& PEND_OVG,
 
-    // 3. Print Cooking Orders
-    std::cout << "Cooking Orders IDs:" << std::endl;
-    std::cout << cookingOrders.GetCount() << " Cooking: ";
-    cookingOrders.print();
-    std::cout << std::endl;
-    std::cout << "----------------------------------------" << std::endl;
+    LinkedQueue<Chef*>& Free_CS,
+    LinkedQueue<Chef*>& Free_CN,
 
-    // 4. Print Available Tables
-    std::cout << "Available Tables:" << std::endl;
-    std::cout << availableTables.GetCount() << " Tables: ";
-    availableTables.print();
-    std::cout << std::endl;
-    std::cout << "----------------------------------------" << std::endl;
+    Cook_Ords& Cooking_Orders,
 
-    // 5. Print Finished Orders (Stack prints from newest to oldest)
-    std::cout << "Finished Orders IDs (Newest to Oldest):" << std::endl;
-    std::cout << finishedOrders.GetCount() << " Finished: ";
-    finishedOrders.print();
-    std::cout << std::endl;
-    std::cout << "========================================" << std::endl;
+    LinkedQueue<Order*>& RDY_OT,
+    RDY_OV& RDY_OV_List,
+    LinkedQueue<Order*>& RDY_OD,
+
+    PriQueue<Order*>& InServ_Orders,
+
+    LinkedQueue<Order*>& Cancelled_Orders,
+    LinkedStack<Order*>& Finished_Orders,
+
+    PriQueue<Scooter*>& Free_Scooters,
+    PriQueue<Scooter*>& Back_Scooters,
+    LinkedQueue<Scooter*>& Maint_Scooters,
+
+    Fit_Tables& Free_Tables,
+    Fit_Tables& Busy_Sharable,
+    Fit_Tables& Busy_No_Share
+)
+{
+    std::cout << "\n==============================\n";
+    std::cout << "Current Timestep: " << timestep << "\n";
+    std::cout << "==============================\n\n";
+
+    std::cout << "---------- Pending Orders ----------\n";
+    std::cout << "PEND_ODG (" << PEND_ODG.GetCount() << "): ";
+    PEND_ODG.print();
+    std::cout << "\n";
+
+    std::cout << "PEND_ODN (" << PEND_ODN.GetCount() << "): ";
+    PEND_ODN.print();
+    std::cout << "\n";
+
+    std::cout << "PEND_OT (" << PEND_OT.GetCount() << "): ";
+    PEND_OT.print();
+    std::cout << "\n";
+
+    std::cout << "PEND_OVN (" << PEND_OVN.GetCount() << "): ";
+    PEND_OVN.print();
+    std::cout << "\n";
+
+    std::cout << "PEND_OVC (" << PEND_OVC_List.GetCount() << "): ";
+    PEND_OVC_List.print();
+    std::cout << "\n";
+
+    std::cout << "PEND_OVG (" << PEND_OVG.GetCount() << "): ";
+    PEND_OVG.print();
+    std::cout << "\n\n";
+
+    std::cout << "---------- Free Chefs ----------\n";
+    std::cout << "Free_CS (" << Free_CS.GetCount() << "): ";
+    Free_CS.print();
+    std::cout << "\n";
+
+    std::cout << "Free_CN (" << Free_CN.GetCount() << "): ";
+    Free_CN.print();
+    std::cout << "\n\n";
+
+    std::cout << "---------- Cooking Orders ----------\n";
+    std::cout << "Cooking_Orders (" << Cooking_Orders.GetCount() << "): ";
+    Cooking_Orders.print();
+    std::cout << "\n\n";
+
+    std::cout << "---------- Ready Orders ----------\n";
+    std::cout << "RDY_OT (" << RDY_OT.GetCount() << "): ";
+    RDY_OT.print();
+    std::cout << "\n";
+
+    std::cout << "RDY_OV (" << RDY_OV_List.GetCount() << "): ";
+    RDY_OV_List.print();
+    std::cout << "\n";
+
+    std::cout << "RDY_OD (" << RDY_OD.GetCount() << "): ";
+    RDY_OD.print();
+    std::cout << "\n\n";
+
+    std::cout << "---------- In-Service Orders ----------\n";
+    std::cout << "InServ_Orders (" << InServ_Orders.GetCount() << "): ";
+    InServ_Orders.print();
+    std::cout << "\n\n";
+
+    std::cout << "---------- Cancelled / Finished ----------\n";
+    std::cout << "Cancelled_Orders (" << Cancelled_Orders.GetCount() << "): ";
+    Cancelled_Orders.print();
+    std::cout << "\n";
+
+    std::cout << "Finished_Orders (" << Finished_Orders.GetCount() << "): ";
+    Finished_Orders.print();
+    std::cout << "\n\n";
+
+    std::cout << "---------- Scooters ----------\n";
+    std::cout << "Free_Scooters (" << Free_Scooters.GetCount() << "): ";
+    Free_Scooters.print();
+    std::cout << "\n";
+
+    std::cout << "Back_Scooters (" << Back_Scooters.GetCount() << "): ";
+    Back_Scooters.print();
+    std::cout << "\n";
+
+    std::cout << "Maint_Scooters (" << Maint_Scooters.GetCount() << "): ";
+    Maint_Scooters.print();
+    std::cout << "\n\n";
+
+    std::cout << "---------- Tables ----------\n";
+    std::cout << "Free_Tables (" << Free_Tables.GetCount() << "): ";
+    Free_Tables.print();
+    std::cout << "\n";
+
+    std::cout << "Busy_Sharable (" << Busy_Sharable.GetCount() << "): ";
+    Busy_Sharable.print();
+    std::cout << "\n";
+
+    std::cout << "Busy_No_Share (" << Busy_No_Share.GetCount() << "): ";
+    Busy_No_Share.print();
+    std::cout << "\n";
+
+    std::cout << "\n========================================\n";
 }
