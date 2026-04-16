@@ -9,7 +9,8 @@ enum OrderType {
     TYPE_ODN, // Normal Dine-in
     TYPE_OT,  // Takeaway
     TYPE_OVN, // Normal Delivery
-    TYPE_OVC  // VIP Delivery
+    TYPE_OVC, // VIP Delivery
+    TYPE_OVG  // General Delivery
 };
 
 // Forward declaration of resources
@@ -52,6 +53,16 @@ public:
 	void setPrice(double pr);
 	void setSize(double s);
 	void setDistance(double d);
+	Chef* AssignedChef() const;
+	Table* AssignedTable() const;
+	Scooter* AssignedScooter() const;
+	int GetRequestTime() const;
+	int GetFinishTime() const;
+	void setRequestTime(int time);
+	void setFinishTime(int time);
+	void setAssignedChef(Chef* c);
+	void setAssignedTable(Table* t);
+	void setAssignedScooter(Scooter* s);
 
     // Destructor
     ~Order();
