@@ -70,29 +70,26 @@ void Restaurant::AddAction(Action* pAction)
 // ==========================================================
 // Cancel Logic (Used by CancelAction)
 // ==========================================================
-void Restaurant::CancelOVC(int targetID)
+bool Restaurant::CancelOVC(int targetID)
 {
     Order* tempOrd;
     bool found = false;
 
-    // 1. Search in PEND_OVC
-    if (PEND_OVC.CancelOrder(targetID))
-        return;
-
-    // 2. Search in RDY_OVL
-    if (RDY_OVL.SearchAndRemove(targetID))
-        return;
-
-    // 3. Search in Cooking_Orders
-   Chef* assignedChef = Cooking_Orders.CancelOrder(targetID);
-      if (!assignedChef) return;
-      // If found in Cooking_Orders, the assigned chef becomes free
-    if (assignedChef->GetType() == 'S') {
-        Free_CS.enqueue(assignedChef);
-    }
-    else {
-        Free_CN.enqueue(assignedChef);
+    if(PEND_OVC.CancelOrder(targetID, tempOrd)) {
+        Cancelled_Orders.enqueue(tempOrd);
+        return true;
 	}
+    if(Cooking_Orders.CancelOrder(targetID, tempOrd)) {
+        Cancelled_Orders.enqueue(tempOrd);
+        if(tempOrd->AssignedChef()->GetType() == 'S') Free_CS.enqueue(tempOrd->AssignedChef());
+		else Free_CN.enqueue(tempOrd->AssignedChef());
+        return true;
+	}
+    if(RDY_OVL.SearchAndRemove(targetID, tempOrd)) {
+        Cancelled_Orders.enqueue(tempOrd);
+        return true;
+    }
+	return false; // Not found in any list
 }
 
 // ==========================================================

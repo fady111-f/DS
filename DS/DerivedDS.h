@@ -15,7 +15,7 @@ class Table;
 class Pend_OVC : public LinkedQueue<Order*> {
 public:
     // Function to cancel an order by its ID
-    bool CancelOrder(int orderID) {
+    bool CancelOrder(int orderID, Order*& ReturnOrd) {
         // Implementation Logic for later: 
         // 1. Dequeue elements one by one into a temporary queue.
         // 2. If the element's ID matches orderID, do NOT enqueue it in the temp queue (this removes it).
@@ -26,6 +26,7 @@ public:
         while (dequeue(currentOrder)) {
             if (currentOrder->GetID() == orderID) {
                 found = true; // Mark as found but do not enqueue back
+				ReturnOrd = currentOrder; // Set the output parameter to the found order
             } else {
 				tempQueue.enqueue(currentOrder); // Enqueue back to temp queue
             }
@@ -43,13 +44,14 @@ public:
 class RDY_OV : public LinkedQueue<Order*> {
 public:
     // Search and remove a specific order by ID
-    bool SearchAndRemove(int orderID) {
+    bool SearchAndRemove(int orderID, Order*& ReturnOrd) {
         LinkedQueue<Order*> tempQueue;
         Order* currentOrder = nullptr;
         bool found = false;
         while (dequeue(currentOrder)) {
             if (currentOrder->GetID() == orderID) {
                 found = true; // do not enqueue back => removes it
+				ReturnOrd = currentOrder; // Set the output parameter to the found order
             } else {
                 tempQueue.enqueue(currentOrder);
             }
@@ -67,7 +69,7 @@ public:
 class Cook_Ords : public PriQueue<Order*> {
 public:
     // Function to cancel an order by its ID
-    Chef* CancelOrder(int orderID) {
+    Chef* CancelOrder(int orderID, Order*& ReturnOrd) {
         // Implementation Logic for later:
         // Dequeue all items, filter out the cancelled ID, and enqueue the rest back.
         // Placeholder for Phase 2
@@ -78,6 +80,7 @@ public:
         while (dequeue(currentOrder)) {
             if (currentOrder->GetID() == orderID) {
                 found = true; // Mark as found but do not enqueue back
+				ReturnOrd = currentOrder; // Set the output parameter to the found order
 				assignedChef = currentOrder->AssignedChef();
             }
             else {

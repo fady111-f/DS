@@ -11,7 +11,6 @@
 #include "Table.h"
 #include "Scooter.h"
 
-// Forward Declaration عشان نمنع مشكلة الـ Circular Dependency
 class Action;
 
 class Restaurant
@@ -57,7 +56,6 @@ private:
     PriQueue<Scooter*> Free_Scooters;
     PriQueue<Scooter*> Back_Scooters;
     LinkedQueue<Scooter*> Maint_Scooters;
-
 public:
     Restaurant();
     ~Restaurant();
@@ -75,7 +73,7 @@ public:
     void PrintAll(int timestep);
     void RandomSimulator();
     void RunSimulation();
-    void CancelOVC(int id);
+    bool CancelOVC(int id);
 };
 
 #endif // RESTAURANT_H
