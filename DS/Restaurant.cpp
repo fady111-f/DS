@@ -1,6 +1,12 @@
 #include "Restaurant.h"
+#include "Action.h"  // ضروري للـ Actions
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
+
+// ==========================================================
+// Constructor & Destructor
+// ==========================================================
 
 Restaurant::Restaurant()
 {
@@ -12,12 +18,36 @@ Restaurant::~Restaurant()
     delete pUI;
 }
 
+// ==========================================================
+// Queue Additions (Orders)
+// ==========================================================
+
 void Restaurant::add_odg(Order* o) { PEND_ODG.enqueue(o); }
 void Restaurant::add_odn(Order* o) { PEND_ODN.enqueue(o); }
 void Restaurant::add_ot(Order* o) { PEND_OT.enqueue(o); }
 void Restaurant::add_ovn(Order* o) { PEND_OVN.enqueue(o); }
 void Restaurant::add_ovc(Order* o) { PEND_OVC.enqueue(o); }
-void Restaurant::add_ovg(Order* o, int priority) { PEND_OVG.enqueue(o, priority); }
+
+// تم التعديل لـ double بناءً على الحسبة في الـ RequestAction
+void Restaurant::add_ovg(Order* o, double priority) { PEND_OVG.enqueue(o, priority); }
+
+// ==========================================================
+// Queue Additions (Actions)
+// ==========================================================
+
+void Restaurant::AddRequestAction(Action* pAction)
+{
+    RequestActions.enqueue(pAction);
+}
+
+void Restaurant::AddCancelAction(Action* pAction)
+{
+    CancelActions.enqueue(pAction);
+}
+
+// ==========================================================
+// Print State
+// ==========================================================
 
 void Restaurant::PrintAll(int timestep)
 {
@@ -33,6 +63,21 @@ void Restaurant::PrintAll(int timestep)
         Free_Tables, Busy_Sharable, Busy_No_Share
     );
 }
+
+// ==========================================================
+// Cancel Logic
+// ==========================================================
+
+void Restaurant::CancelOVC(int id)
+{
+    PEND_OVC.CancelOrder(id);
+    Cooking_Orders.CancelOrder(id);
+    RDY_OVL.SearchAndRemove(id);
+}
+
+// ==========================================================
+// Simulation Functions
+// ==========================================================
 
 void Restaurant::RandomSimulator()
 {
@@ -169,9 +214,21 @@ void Restaurant::RandomSimulator()
                     Scooter* s = nullptr;
                     if (Free_Scooters.dequeue(s)) ord->AssignScooter(s);
                 }
+                // =====================================================================
+                // إضافة الطاولة لقائمة المشغولين (Busy)
+                // =====================================================================
                 else if (ord->GetType() == TYPE_ODG || ord->GetType() == TYPE_ODN) {
                     Table* t = nullptr;
-                    if (Free_Tables.dequeue(t)) ord->AssignTable(t);
+                    if (Free_Tables.dequeue(t)) {
+                        ord->AssignTable(t);
+
+                        if (ord->GetType() == TYPE_ODG) {
+                            Busy_Sharable.enqueue(t, rand() % 100 + 1);
+                        }
+                        else {
+                            Busy_No_Share.enqueue(t, rand() % 100 + 1);
+                        }
+                    }
                 }
                 InServ_Orders.enqueue(ord, rand() % 100 + 1);
             }
@@ -235,32 +292,73 @@ void Restaurant::RandomSimulator()
         }
         while (tempQ_Cook.dequeue(tempOrd)) Cooking_Orders.enqueue(tempOrd, rand() % 100 + 1);
 
-        // 3.7. With probability 25%, pick top order from In-service list to finish list.
-        if ((rand() % 100) < 25)
+        // =========================================================================
+        // 3.7. اللوب اللي بتحل مشكلة الاختناق وبترجع الموارد
+        // =========================================================================
+        for (int i = 0; i < 20; i++)
         {
-            Order* ord = nullptr;
-            if (InServ_Orders.dequeue(ord))
+            if ((rand() % 100) < 25)
             {
-                Finished_Orders.push(ord);
-                finishedOrCancelled++;
+                Order* ord = nullptr;
+                if (InServ_Orders.dequeue(ord))
+                {
+                    Finished_Orders.push(ord);
+                    finishedOrCancelled++;
 
-                Chef* c = ord->AssignedChef();
-                if (c) {
-                    if (c->GetType() == 'N') Free_CN.enqueue(c);
-                    else Free_CS.enqueue(c);
-                    ord->AssignChef(nullptr);
-                }
+                    // إرجاع الطباخ
+                    Chef* c = ord->AssignedChef();
+                    if (c) {
+                        if (c->GetType() == 'N') Free_CN.enqueue(c);
+                        else Free_CS.enqueue(c);
+                        ord->AssignChef(nullptr);
+                    }
 
-                Scooter* s = ord-> AssignedScooter();
-                if (s) {
-                    Back_Scooters.enqueue(s, rand() % 100 + 1);
-                    ord->AssignScooter(nullptr);
-                }
+                    // إرجاع الموتوسيكل
+                    Scooter* s = ord->AssignedScooter();
+                    if (s) {
+                        Back_Scooters.enqueue(s, rand() % 100 + 1);
+                        ord->AssignScooter(nullptr);
+                    }
 
-                Table* t = ord->AssignedTable();
-                if (t) {
-                    Free_Tables.enqueue(t, rand() % 100 + 1);
-                    ord->AssignTable(nullptr);
+                    // =======================================================
+                    // إرجاع الطاولة وإزالتها من الـ Busy بالاسم بالضبط (الحل النهائي)
+                    // =======================================================
+                    Table* t = ord->AssignedTable();
+                    if (t) {
+                        Free_Tables.enqueue(t, rand() % 100 + 1);
+
+                        Table* tempT = nullptr;
+                        bool found = false;
+
+                        if (ord->GetType() == TYPE_ODG) {
+                            Fit_Tables tempQ;
+                            // بندور على الطاولة بالظبط
+                            while (Busy_Sharable.dequeue(tempT)) {
+                                if (!found && tempT == t) {
+                                    found = true; // لقيناها مش هنضيفها في المؤقت
+                                }
+                                else {
+                                    tempQ.enqueue(tempT, rand() % 100 + 1);
+                                }
+                            }
+                            // نرجع الباقي
+                            while (tempQ.dequeue(tempT)) Busy_Sharable.enqueue(tempT, rand() % 100 + 1);
+                        }
+                        else if (ord->GetType() == TYPE_ODN) {
+                            Fit_Tables tempQ;
+                            while (Busy_No_Share.dequeue(tempT)) {
+                                if (!found && tempT == t) {
+                                    found = true;
+                                }
+                                else {
+                                    tempQ.enqueue(tempT, rand() % 100 + 1);
+                                }
+                            }
+                            while (tempQ.dequeue(tempT)) Busy_No_Share.enqueue(tempT, rand() % 100 + 1);
+                        }
+
+                        ord->AssignTable(nullptr);
+                    }
                 }
             }
         }
@@ -307,10 +405,4 @@ void Restaurant::RunSimulation()
     std::cout << "Starting Random Simulation...\n";
     RandomSimulator();
     std::cout << "\nSimulation Finished.\n";
-}
-void Restaurant::CancelOVC(int id)
-{
-    PEND_OVC.CancelOrder(id);
-	Cooking_Orders.CancelOrder(id);
-	RDY_OVL.SearchAndRemove(id);
 }

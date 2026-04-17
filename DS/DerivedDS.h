@@ -44,22 +44,16 @@ class RDY_OV : public LinkedQueue<Order*> {
 public:
     // Search and remove a specific order by ID
     bool SearchAndRemove(int orderID) {
-        // Implementation Logic for later:
-        // Traverse the queue to find the order by ID, remove it, and return it.
-         // Placeholder for Phase 2
         LinkedQueue<Order*> tempQueue;
         Order* currentOrder = nullptr;
         bool found = false;
         while (dequeue(currentOrder)) {
             if (currentOrder->GetID() == orderID) {
-                returnedOrder = currentOrder;
-                found = true; // Mark as found but do not enqueue back
-            }
-            else {
-                tempQueue.enqueue(currentOrder); // Enqueue back to temp queue
+                found = true; // do not enqueue back => removes it
+            } else {
+                tempQueue.enqueue(currentOrder);
             }
         }
-        // Enqueue all elements from the temp queue back to this queue
         while (tempQueue.dequeue(currentOrder)) {
             enqueue(currentOrder);
         }
