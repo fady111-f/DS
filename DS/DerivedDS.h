@@ -67,16 +67,18 @@ public:
 class Cook_Ords : public PriQueue<Order*> {
 public:
     // Function to cancel an order by its ID
-    bool CancelOrder(int orderID) {
+    Chef* CancelOrder(int orderID) {
         // Implementation Logic for later:
         // Dequeue all items, filter out the cancelled ID, and enqueue the rest back.
         // Placeholder for Phase 2
         PriQueue<Order*> tempQueue;
         Order* currentOrder = nullptr;
         bool found = false;
+		Chef* assignedChef = nullptr;
         while (dequeue(currentOrder)) {
             if (currentOrder->GetID() == orderID) {
                 found = true; // Mark as found but do not enqueue back
+				assignedChef = currentOrder->AssignedChef();
             }
             else {
                 tempQueue.enqueue(currentOrder, currentOrder->GetPriority()); // Enqueue back to temp queue
@@ -86,7 +88,7 @@ public:
         while (tempQueue.dequeue(currentOrder)) {
             enqueue(currentOrder, currentOrder->GetPriority());
         }
-        return found;
+        return assignedChef;
     }
     
 };

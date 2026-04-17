@@ -76,53 +76,23 @@ void Restaurant::CancelOVC(int targetID)
     bool found = false;
 
     // 1. Search in PEND_OVC
-    LinkedQueue<Order*> tempQ_OVC;
-    while (PEND_OVC.dequeue(tempOrd)) {
-        if (!found && tempOrd->GetID() == targetID) {
-            Cancelled_Orders.enqueue(tempOrd);
-            found = true;
-        }
-        else {
-            tempQ_OVC.enqueue(tempOrd);
-        }
-    }
-    while (tempQ_OVC.dequeue(tempOrd)) PEND_OVC.enqueue(tempOrd);
-    if (found) return;
+    if (PEND_OVC.CancelOrder(targetID))
+        return;
 
     // 2. Search in RDY_OVL
-    LinkedQueue<Order*> tempQ_RDY;
-    while (RDY_OVL.dequeue(tempOrd)) {
-        if (!found && tempOrd->GetID() == targetID) {
-            Cancelled_Orders.enqueue(tempOrd);
-            found = true;
-        }
-        else {
-            tempQ_RDY.enqueue(tempOrd);
-        }
-    }
-    while (tempQ_RDY.dequeue(tempOrd)) RDY_OVL.enqueue(tempOrd);
-    if (found) return;
+    if (RDY_OVL.SearchAndRemove(targetID))
+        return;
 
     // 3. Search in Cooking_Orders
-    PriQueue<Order*> tempQ_Cook;
-    while (Cooking_Orders.dequeue(tempOrd)) {
-        if (!found && tempOrd->GetID() == targetID && tempOrd->GetType() == TYPE_OVC) {
-            Cancelled_Orders.enqueue(tempOrd);
-
-            // Release the chef assigned to this cooking order
-            Chef* c = tempOrd->AssignedChef();
-            if (c) {
-                if (c->GetType() == 'N') Free_CN.enqueue(c);
-                else Free_CS.enqueue(c);
-                tempOrd->AssignChef(nullptr);
-            }
-            found = true;
-        }
-        else {
-            tempQ_Cook.enqueue(tempOrd, tempOrd->GetPriority());
-        }
+   Chef* assignedChef = Cooking_Orders.CancelOrder(targetID);
+      if (!assignedChef) return;
+      // If found in Cooking_Orders, the assigned chef becomes free
+    if (assignedChef->GetType() == 'S') {
+        Free_CS.enqueue(assignedChef);
     }
-    while (tempQ_Cook.dequeue(tempOrd)) Cooking_Orders.enqueue(tempOrd, tempOrd->GetPriority());
+    else {
+        Free_CN.enqueue(assignedChef);
+	}
 }
 
 // ==========================================================
