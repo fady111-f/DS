@@ -1,6 +1,6 @@
+#pragma once
 #include "RequestAction.h"
-
-void RequestAction::Act()
+void RequestAction::Act(Restaurant* res)
 {
 	Order* ord = new Order(OrderID, type, price, size, distance);
 	switch (type) {
@@ -20,8 +20,7 @@ void RequestAction::Act()
 		res->add_ovc(ord);
 		break;
 		case TYPE_OVG:
-		double priority = price * size * distance;
-		res->add_ovg(ord, priority);
+		res->add_ovg(ord, ord->GetPriority());
 		break;
 	}
 }

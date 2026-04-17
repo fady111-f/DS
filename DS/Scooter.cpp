@@ -3,6 +3,7 @@
 Scooter::Scooter(int id, int noOfDeliveries) {
     this->id = id;
     this->NoOfDeliveries = noOfDeliveries;
+	distance = 0; 
 }
 
 int Scooter::GetID() const {
@@ -12,6 +13,11 @@ int Scooter::GetID() const {
 int Scooter::GetNoOfDeliveries() const
 {
     return NoOfDeliveries;
+}
+
+int Scooter::GetDistance() const
+{
+    return distance;
 }
 
 void Scooter::setNoOfDeliveries(int noOfDeliv)

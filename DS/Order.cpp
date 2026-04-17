@@ -9,7 +9,7 @@ Order::Order(int orderID, OrderType orderType, double pr, double s, double d) {
     distance = d;
     RequestTime = 0;
     FinishTime = 0;
-	priority = pr * s * d; // Example priority calculation based on price, size, and distance
+    priority = 10 * pr - 5 * d - 5 * s;
     // Initially, no resources are assigned
     assignedChef = nullptr;
     assignedTable = nullptr;

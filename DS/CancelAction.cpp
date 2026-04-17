@@ -1,5 +1,5 @@
 #include "CancelAction.h"
-void CancelAction::Act() 
+void CancelAction::Act(Restaurant* res) 
 {
 	res->CancelOVC(OrderID);
 }

@@ -6,7 +6,6 @@
 #include "LinkedStack.h"
 #include "PriQueue.h"
 #include "DerivedDS.h"
-
 #include "Order.h"
 #include "Chef.h"
 #include "Table.h"
@@ -21,11 +20,9 @@ private:
     UI* pUI;
 
     // ==========================================================
-    // 1. Action Lists (بناءً على الصورة)
+   
     // ==========================================================
-    LinkedQueue<Action*> RequestActions;  // Queue of actions for Request
-    LinkedQueue<Action*> CancelActions;   // Queue for cancellation
-
+    LinkedQueue<Action*> Actions;  // Queue of actions for Request
     // ==========================================================
     // 2. Pending Orders -> 6 lists, a list for each type
     // ==========================================================
@@ -35,7 +32,6 @@ private:
     LinkedQueue<Order*> PEND_OVN;
     Pend_OVC PEND_OVC;
     PriQueue<Order*> PEND_OVG;
-
     // ==========================================================
     // 3. Available Chefs -> 2 lists, a list for each type
     // ==========================================================
@@ -50,7 +46,6 @@ private:
     Fit_Tables Busy_No_Share;
 
     // ==========================================================
-    // باقي القوائم الخاصة بالنظام (من الكود القديم بتاعك)
     // ==========================================================
     LinkedQueue<Order*> Cancelled_Orders;
     LinkedStack<Order*> Finished_Orders;
@@ -67,20 +62,16 @@ public:
     Restaurant();
     ~Restaurant();
 
-    // دوال إضافة الطلبات
     void add_odg(Order* o);
     void add_odn(Order* o);
     void add_ot(Order* o);
     void add_ovn(Order* o);
     void add_ovc(Order* o);
-    // خليت الـ priority نوعها double عشان تقبل المعادلة اللي عملتها في RequestAction
     void add_ovg(Order* o, double priority);
 
-    // دوال جديدة لإضافة الـ Actions للطوابير بتاعتها (هتحتاجها وقت قراءة الملف)
-    void AddRequestAction(Action* pAction);
-    void AddCancelAction(Action* pAction);
+    void AddAction(Action* pAction);
 
-    // دوال المحاكاة الأساسية
+    
     void PrintAll(int timestep);
     void RandomSimulator();
     void RunSimulation();

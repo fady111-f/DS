@@ -5,12 +5,12 @@
 
 // Enum to define the different types of orders easily
 enum OrderType {
-    TYPE_ODG, // General Dine-in
+    TYPE_ODG, // Grilled Dine-in
     TYPE_ODN, // Normal Dine-in
     TYPE_OT,  // Takeaway
     TYPE_OVN, // Normal Delivery
-    TYPE_OVC, // VIP Delivery
-    TYPE_OVG  // General Delivery
+    TYPE_OVC, //  Delivery
+    TYPE_OVG  // Grilled Delivery
 };
 
 // Forward declaration of resources
@@ -19,7 +19,7 @@ class Table;
 class Scooter;
 
 class Order {
-private:
+protected:
     int id;           // Order ID
     OrderType type;   // Type of the order
 	int priority;    // Priority for queues that require it (e.g., PEND_OVG)
